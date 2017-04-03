@@ -4,7 +4,7 @@ require 'json'
 
 game=Game.new
 
-game.board.each do |i|
+game.board.each_with_index do |v,i|
   print game.board[i]
   puts ' '
 end

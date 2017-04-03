@@ -1,5 +1,5 @@
 require 'json'
-require 'Piece.rb'
+require_relative 'Piece.rb'
 class Game
   attr_accessor :board
   def initialize
