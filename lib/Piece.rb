@@ -29,7 +29,7 @@ class Piece
     coords[1]=coords[1].to_i
     row=row_converts[coords[1]]
     column=column_converts[coords[0]]
-    return [row,coulmn]
+    return [row,column]
   end
 end
 
@@ -108,7 +108,6 @@ class Rook < Piece
   end
 
   def legal?(current, target, board, empty='  ')
-    current=convert(current)
     current_row=current[0]
     current_column=current[1]
     target=convert(target)
@@ -122,7 +121,7 @@ class Rook < Piece
     elsif !target_row.between?(0,7)||!target_column.between?(0,7)
       puts "Illegal move: The given square does not exist."
       return false
-    elsif current_row!=target_row||current_column!=target_column
+    elsif current_row!=target_row&&current_column!=target_column
       puts "Illegal move: Rooks must move in a streight line, horizontally or vertically."
       return false
     elsif target_contents!=empty&&yield(target_contents)==@player
@@ -130,7 +129,31 @@ class Rook < Piece
       return false
     end
     diff=current_row-target_row
-    diff=target_column-current_column if diff==0
-
+    horiz=false
+    if diff==0
+      diff=target_column-current_column
+      horiz=true
+    end
+    blocked=false
+    diff.abs.times do |i|
+      break if diff.abs==i
+      next if i==0
+      if diff>0&&horiz
+        blocked=true unless board[current_row][current_column+i]==empty
+      elsif diff<0&&horiz
+        blocked=true unless board[current_row][current_column-i]==empty
+      elsif diff>0&&!horiz
+        blocked=true unless board[current_row+i][current_column]==empty
+      elsif diff<0&&!horiz
+        blocked=true unless board[current_row-i][current_column]==empty
+      end
+      break if blocked
+    end
+    if blocked
+      puts "Illegal move: Path is obstructed by another piece"
+      return false
+    else
+      return true
+    end
   end
 end

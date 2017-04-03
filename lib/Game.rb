@@ -87,6 +87,24 @@ class Game
     @p2_pieces['P8']=@pawn1_p2
   end
 
+  def find_piece(piece)
+    current_c=0
+    current_r=0
+    found=false
+    @board.each_with_index do |row,r_index|
+      row.each_with_index do |cell,c_index|
+        current_c=c_index if cell==piece.id
+        found=true if cell==piece.id
+        break if found
+      end
+      current_r=r_index if found
+      break if found
+    end
+    return [current_r,current_c]
+  end
+
+
+
   def draw_board
     row=8
     @board.each_with_index do |v,i|
@@ -96,15 +114,15 @@ class Game
     puts "  A  B  C  D  E  F  G  H "
   end
 
-  def move(player, piece_id)
-    player=1
-    piece_id='R1'
+  def move(player, given_id, target)
     if player==1
-      piece=@p1_pieces[piece_id]
+      piece=@p1_pieces[given_id]
+      current=find_piece(piece)
     elsif player==2
-      piece=@p2_pieces[piece_id]
+      piece=@p2_pieces[given_id]
+      current=find_piece(piece)
     end
-    piece.legal?(['A',1],['A',3]) do |c|
+    if piece.legal?(current,target,@board,@empty) do |c|
       if c==c.colorize(:white).on_black
         return 1
       elsif c==c.colorize(:black).on_white
@@ -112,6 +130,21 @@ class Game
       else
         return nul
     end
+      @board[current[0]][current[1]]=@empty
+      target=convert(target)
+      @board[target[0],target[1]]=piece.id
+    end
+  end
+
+  def remove(player, given_id)
+    if player==1
+      piece=@p1_pieces[given_id]
+      current=find_piece(piece)
+    elsif player==2
+      piece=@p2_pieces[given_id]
+      current=find_piece(piece)
+    end
+    @board[current[0]][current[1]]=@empty
   end
 
   def convert(coords) #converts board coordinates to array coordinates
@@ -123,5 +156,8 @@ class Game
     column=column_converts[coords[0]]
     return [row,coulmn]
   end
+
+
+
 
 end end
