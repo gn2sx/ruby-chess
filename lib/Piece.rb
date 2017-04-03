@@ -1,5 +1,6 @@
 require_relative 'Game.rb'
 class Piece
+  attr_accessor :id
   def initialize(type,id)
     @type=type
     @id=id
@@ -8,6 +9,7 @@ class Piece
 end
 
 class Knight < Piece
+
   def initialize(id, player)
     @type='knight'
     @id=id

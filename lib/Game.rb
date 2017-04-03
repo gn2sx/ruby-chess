@@ -5,9 +5,10 @@ class Game
   def initialize
     spawn_pieces
     @board=[]
-    @empty='.'
+    @empty='..'
     8.times{|i| @board.push([@empty, @empty, @empty, @empty, @empty, @empty, @empty, @empty])}
-
+    board[0]=[@rook1_p2.id,@knight1_p2.id,@bishop1_p2.id,@king_p2.id,@queen_p2.id,@bishop2_p2.id,@knight2_p2.id,@rook2_p2.id]
+    board[1]=[@pawn1_p2.id,@pawn2_p2.id,@pawn3_p2.id,@pawn4_p2.id,@pawn5_p2.id,@pawn6_p2.id,@pawn7_p2.id,@pawn8_p2.id]
   end
 
   def spawn_pieces
@@ -30,7 +31,7 @@ class Game
     #player 2
     @king_p2=King.new(2)
     @queen_p2=Queen.new('Q1', 2)
-    @bishop2_p2=Bishop.new('B1', 2)
+    @bishop1_p2=Bishop.new('B1', 2)
     @bishop2_p2=Bishop.new('B2', 2)
     @knight1_p2=Knight.new('N1', 2)
     @knight2_p2=Knight.new('N2', 2)
@@ -44,5 +45,9 @@ class Game
     @pawn6_p2=Pawn.new('P6', 2)
     @pawn7_p2=Pawn.new('P7', 2)
     @pawn8_p2=Pawn.new('P8', 2)
+  end
+
+  def draw_board
+
   end
 end
