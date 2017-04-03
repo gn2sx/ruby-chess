@@ -6,15 +6,30 @@ class Piece
     @type=type
     @id=id
     @player=player
+    @alive=true
     set_color
   end
 
   def set_color
     if @player==1
-      @id=id.colorize(:white)
+      @id=id.colorize(:white).on_black
     elsif @player==2
-      @id=id.colorize(:cyan)
+      @id=id.colorize(:black).on_white
     end
+  end
+
+  def alive?
+    return @alive
+  end
+
+  def convert(coords) #converts board coordinates to array coordinates
+    row_converts=Hash[8,0,7,1,6,2,5,3,4,4,3,5,2,6,1,7]
+    column_converts=Hash['A',0,'B',1,'C',2,'D',3,'E',4,'F',5,'G',6,'H',7]
+    coords[0]=coords[0].upcase
+    coords[1]=coords[1].to_i
+    row=row_converts[coords[1]]
+    column=column_converts[coords[0]]
+    return [row,coulmn]
   end
 end
 
@@ -26,6 +41,7 @@ class Knight < Piece
     @move_style='jump'
     @player=player
     set_color
+    @alive=true
   end
 end
 
@@ -37,6 +53,12 @@ class Pawn < Piece
     @move_style='charge'
     @player=player
     set_color
+    @alive=true
+    @first_move=true
+  end
+
+  def first_move?
+    return @first_move
   end
 
   def promote(new_type)
@@ -51,6 +73,7 @@ class King < Piece
     @move_style='any'
     @player=player
     set_color
+    @alive=true
   end
 end
 
@@ -61,6 +84,7 @@ class Queen < Piece
     @move_style='any'
     @player=player
     set_color
+    @alive=true
   end
 end
 
@@ -70,6 +94,7 @@ class Bishop < Piece
     @id=id
     @player=player
     set_color
+    @alive=true
   end
 end
 
@@ -79,5 +104,33 @@ class Rook < Piece
     @id=id
     @player=player
     set_color
+    @alive=true
+  end
+
+  def legal?(current, target, board, empty='  ')
+    current=convert(current)
+    current_row=current[0]
+    current_column=current[1]
+    target=convert(target)
+    target_row=target[0]
+    target_column=target[1]
+    target_contents=board[target_row][target_column]
+    #board[target_row][target_column].uncolorize
+    if current==target
+      puts "Illegal move: The #{@type} is already on that space."
+      return false
+    elsif !target_row.between?(0,7)||!target_column.between?(0,7)
+      puts "Illegal move: The given square does not exist."
+      return false
+    elsif current_row!=target_row||current_column!=target_column
+      puts "Illegal move: Rooks must move in a streight line, horizontally or vertically."
+      return false
+    elsif target_contents!=empty&&yield(target_contents)==@player
+      puts "Illegal move: Space is occupied by your #{target_contents}"
+      return false
+    end
+    diff=current_row-target_row
+    diff=target_column-current_column if diff==0
+
   end
 end
