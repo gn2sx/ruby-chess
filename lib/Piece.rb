@@ -1,10 +1,20 @@
 require_relative 'Game.rb'
+require 'colorize'
 class Piece
   attr_accessor :id
-  def initialize(type,id)
+  def initialize(type,id,player)
     @type=type
     @id=id
+    @player=player
+    set_color
+  end
 
+  def set_color
+    if @player==1
+      @id=id.colorize(:white)
+    elsif @player==2
+      @id=id.colorize(:cyan)
+    end
   end
 end
 
@@ -15,6 +25,7 @@ class Knight < Piece
     @id=id
     @move_style='jump'
     @player=player
+    set_color
   end
 end
 
@@ -25,6 +36,7 @@ class Pawn < Piece
     @id=id
     @move_style='charge'
     @player=player
+    set_color
   end
 
   def promote(new_type)
@@ -38,6 +50,7 @@ class King < Piece
     @id='KI'
     @move_style='any'
     @player=player
+    set_color
   end
 end
 
@@ -47,6 +60,7 @@ class Queen < Piece
     @id=id
     @move_style='any'
     @player=player
+    set_color
   end
 end
 
@@ -55,6 +69,7 @@ class Bishop < Piece
     @type='bishop'
     @id=id
     @player=player
+    set_color
   end
 end
 
@@ -63,5 +78,6 @@ class Rook < Piece
     @type='rook'
     @id=id
     @player=player
+    set_color
   end
 end
