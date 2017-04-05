@@ -46,11 +46,11 @@ class Knight < Piece
 end
 
 class Pawn < Piece
-  @@promoted=0
+  @@p1_promoted=0
+  @@p2_promoted=0
   def initialize(id, player)
     @type='pawn'
     @id=id
-    @move_style='charge'
     @player=player
     set_color
     @alive=true
@@ -62,7 +62,13 @@ class Pawn < Piece
   end
 
   def promote(new_type)
+    @type=new_type.downcase
+    @@p1_promoted+=1 if @player==1
+    @@p2_promoted+=1 if @player==2
+    case @type
+    when 'queen'
 
+    end
   end
 end
 
@@ -95,6 +101,67 @@ class Bishop < Piece
     @player=player
     set_color
     @alive=true
+  end
+
+  def legal?(current, target, board, empty='  ')
+    current_row=current[0]
+    current_column=current[1]
+    target=convert(target)
+    target_row=target[0]
+    target_column=target[1]
+    target_contents=board[target_row][target_column]
+    #target_player=yield(target_contents)
+    if target_contents==target_contents.colorize(:white).on_black
+      target_player=1
+    elsif target_contents==target_contents.colorize(:black).on_white
+      target_player=2
+    else
+      target_player=nil
+    end
+    x_diff=target_column-current_column
+    y_diff=target_row-current_row
+    if current==target
+      puts "Illegal move: The #{@type} is already on that space."
+      return false
+    elsif !target_row.between?(0,7)||!target_column.between?(0,7)
+      puts "Illegal move: The given square does not exist."
+      return false
+    elsif x_diff.abs!=y_diff.abs
+      puts "Illegal move: Bishops must move in a streight diagonal line."
+      return false
+    elsif target_contents!=empty&&target_player==@player
+      puts "Illegal move: Space is occupied by your #{target_contents}"
+      return false
+    end
+    x_diff=target_column-current_column
+    y_diff=target_row-current_row
+    #positive y=up, negative y=down
+    #positive x=right, negative x=left
+    blocked=false
+    y_diff.abs.times do |i|
+      break if y_diff.abs==i
+      next if i==0
+      if y_diff<0&&x_diff<0
+        #down and left
+        blocked=true unless board[current_row-i][current_column-i]==empty
+      elsif y_diff>0&&x_diff>0
+        #up and right
+        blocked=true unless board[current_row+i][current_column+i]==empty
+      elsif y_diff<0&&x_diff>0
+        #down and right
+        blocked=true unless board[current_row-i][current_column+i]==empty
+      elsif y_diff>0&&x_diff<0
+        #up and left
+        blocked=true unless board[current_row+i][current_column-i]==empty
+      end
+      break if blocked
+    end
+    if blocked
+      puts "Illegal move: Path is obstructed by another piece"
+      return false
+    else
+      return true
+    end
   end
 end
 
