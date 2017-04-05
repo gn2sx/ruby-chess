@@ -6,12 +6,13 @@ class Game
   def initialize
     spawn_pieces
     @board=[]
-    @empty='..'
+    @empty=".."
     8.times{|i| @board.push([@empty, @empty, @empty, @empty, @empty, @empty, @empty, @empty])}
     @board[0]=[@rook1_p2.id,@knight1_p2.id,@bishop1_p2.id,@king_p2.id,@queen_p2.id,@bishop2_p2.id,@knight2_p2.id,@rook2_p2.id]
     @board[1]=[@pawn1_p2.id,@pawn2_p2.id,@pawn3_p2.id,@pawn4_p2.id,@pawn5_p2.id,@pawn6_p2.id,@pawn7_p2.id,@pawn8_p2.id]
     @board[-1]=[@rook1_p1.id,@knight1_p1.id,@bishop1_p1.id,@king_p1.id,@queen_p1.id,@bishop1_p1.id,@knight2_p1.id,@rook2_p1.id]
     @board[-2]=[@pawn1_p1.id,@pawn2_p1.id,@pawn3_p1.id,@pawn4_p1.id,@pawn5_p1.id,@pawn6_p1.id,@pawn7_p1.id,@pawn8_p1.id]
+    @destroyed=[]
   end
 
   def spawn_pieces
@@ -103,7 +104,17 @@ class Game
     return [current_r,current_c]
   end
 
-
+  def remove(player, given_id)
+    if player==1
+      piece=@p1_pieces[given_id]
+      current=find_piece(piece)
+    elsif player==2
+      piece=@p2_pieces[given_id]
+      current=find_piece(piece)
+    end
+    @destroyed.push(@board[current[0]][current[1]])
+    @board[current[0]][current[1]]=@empty
+  end
 
   def draw_board
     row=8
@@ -112,6 +123,8 @@ class Game
       row-=1
     end
     puts "  A  B  C  D  E  F  G  H "
+    puts "Destroyed pieces: "
+    @destroyed.each{|i| print i}
   end
 
   def move(player, given_id, target)
@@ -122,30 +135,26 @@ class Game
       piece=@p2_pieces[given_id]
       current=find_piece(piece)
     end
-    if piece.legal?(current,target,@board,@empty) do |c|
-      if c==c.colorize(:white).on_black
-        return 1
-      elsif c==c.colorize(:black).on_white
-        return 2
-      else
-        return nul
-    end
+    if piece.legal?(current,target,@board,@empty)
       @board[current[0]][current[1]]=@empty
       target=convert(target)
-      @board[target[0],target[1]]=piece.id
+      unless @board[target[0]][target[1]]==@empty
+        enemy_piece_id=@board[target[0]][target[1]]
+        enemy_piece_id=enemy_piece_id.uncolorize
+        if player==1
+          enemy_piece=@p2_pieces[enemy_piece_id]
+          enemy_player=2
+        elsif player==2
+          enemy_piece=@p1_pieces[enemy_piece_id]
+          enemy_player=1
+        end
+        remove(enemy_player,enemy_piece_id)
+      end
+      @board[target[0]][target[1]]=piece.id
     end
   end
 
-  def remove(player, given_id)
-    if player==1
-      piece=@p1_pieces[given_id]
-      current=find_piece(piece)
-    elsif player==2
-      piece=@p2_pieces[given_id]
-      current=find_piece(piece)
-    end
-    @board[current[0]][current[1]]=@empty
-  end
+
 
   def convert(coords) #converts board coordinates to array coordinates
     row_converts=Hash[8,0,7,1,6,2,5,3,4,4,3,5,2,6,1,7]
@@ -154,10 +163,10 @@ class Game
     coords[1]=coords[1].to_i
     row=row_converts[coords[1]]
     column=column_converts[coords[0]]
-    return [row,coulmn]
+    return [row,column]
   end
 
 
 
 
-end end
+end

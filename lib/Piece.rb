@@ -114,6 +114,14 @@ class Rook < Piece
     target_row=target[0]
     target_column=target[1]
     target_contents=board[target_row][target_column]
+    #target_player=yield(target_contents)
+    if target_contents==target_contents.colorize(:white).on_black
+      target_player=1
+    elsif target_contents==target_contents.colorize(:black).on_white
+      target_player=2
+    else
+      target_player=nil
+    end
     #board[target_row][target_column].uncolorize
     if current==target
       puts "Illegal move: The #{@type} is already on that space."
@@ -124,7 +132,7 @@ class Rook < Piece
     elsif current_row!=target_row&&current_column!=target_column
       puts "Illegal move: Rooks must move in a streight line, horizontally or vertically."
       return false
-    elsif target_contents!=empty&&yield(target_contents)==@player
+    elsif target_contents!=empty&&target_player==@player
       puts "Illegal move: Space is occupied by your #{target_contents}"
       return false
     end
@@ -138,13 +146,13 @@ class Rook < Piece
     diff.abs.times do |i|
       break if diff.abs==i
       next if i==0
-      if diff>0&&horiz
+      if diff<0&&horiz
         blocked=true unless board[current_row][current_column+i]==empty
-      elsif diff<0&&horiz
+      elsif diff>0&&horiz
         blocked=true unless board[current_row][current_column-i]==empty
-      elsif diff>0&&!horiz
-        blocked=true unless board[current_row+i][current_column]==empty
       elsif diff<0&&!horiz
+        blocked=true unless board[current_row+i][current_column]==empty
+      elsif diff>0&&!horiz
         blocked=true unless board[current_row-i][current_column]==empty
       end
       break if blocked
