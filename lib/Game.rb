@@ -79,13 +79,13 @@ class Game
     @p2_pieces['R1']=@rook1_p2
     @p2_pieces['R2']=@rook2_p2
     @p2_pieces['P1']=@pawn1_p2
-    @p2_pieces['P2']=@pawn1_p2
-    @p2_pieces['P3']=@pawn1_p2
-    @p2_pieces['P4']=@pawn1_p2
-    @p2_pieces['P5']=@pawn1_p2
-    @p2_pieces['P6']=@pawn1_p2
-    @p2_pieces['P7']=@pawn1_p2
-    @p2_pieces['P8']=@pawn1_p2
+    @p2_pieces['P2']=@pawn2_p2
+    @p2_pieces['P3']=@pawn3_p2
+    @p2_pieces['P4']=@pawn4_p2
+    @p2_pieces['P5']=@pawn5_p2
+    @p2_pieces['P6']=@pawn6_p2
+    @p2_pieces['P7']=@pawn7_p2
+    @p2_pieces['P8']=@pawn8_p2
   end
 
   def find_piece(piece)

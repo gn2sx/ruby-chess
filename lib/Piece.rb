@@ -78,6 +78,11 @@ class Pawn < Piece
     target_row=target[0]
     target_column=target[1]
     target_contents=board[target_row][target_column]
+    if @player==1
+      player_mod=-1
+    elsif @player==2
+      player_mod=1
+    end #Allows for easy conversion of if "forward" is defined as up or down by player
     if target_contents==target_contents.colorize(:white).on_black
       target_player=1
     elsif target_contents==target_contents.colorize(:black).on_white
@@ -91,10 +96,11 @@ class Pawn < Piece
     elsif !target_row.between?(0,7)||!target_column.between?(0,7)
       puts "Illegal move: The given square does not exist."
       return false
-    elsif !first_move?&&target_row!=current_row-1&&(current_column!=target_column||target_column!=current_column+1||target_column!=current_column-1)
+    elsif !first_move?&&target_row!=current_row+player_mod&&target_column!=current_column
       puts "Illegal move: The pawn may only move strieght forward, and only move two spaces on it's first turn."
       return false
-    elsif first_move?&&(target_row!=current_row-1&&target_row!=current_row-2)&&(current_column!=target_column||target_column!=current_column+1||target_column!=current_column-1)
+    elsif first_move?&&!target_row.between?(current_row+player_mod,current_row+(player_mod*2))&&target_column!=current_column
+      puts current_row
       puts "Illegal move: The pawn may only move strieght forward."
       return false
     elsif target_contents!=empty&&target_player==@player
@@ -114,6 +120,35 @@ class King < Piece
     @player=player
     set_color
     @alive=true
+  end
+
+  def legal?(current, target, board, empty='  ')
+    current_row=current[0]
+    current_column=current[1]
+    target=convert(target)
+    target_row=target[0]
+    target_column=target[1]
+    target_contents=board[target_row][target_column]
+    if target_contents==target_contents.colorize(:white).on_black
+      target_player=1
+    elsif target_contents==target_contents.colorize(:black).on_white
+      target_player=2
+    else
+      target_player=nil
+    end
+    if current==target
+      puts "Illegal move: The #{@type} is already on that space."
+      return false
+    elsif !target_row.between?(0,7)||!target_column.between?(0,7)
+      puts "Illegal move: The given square does not exist."
+      return false
+    elsif !target_row.between?(current_row-1,current_row+1)||!target_column.between?(current_column-1,current_column+1)
+      puts "Illegal move: The King must move one space, in any direction."
+    elsif target_contents!=empty&&target_player==@player
+      puts "Illegal move: Space is occupied by your #{target_contents}"
+      return false
+    end
+    return true
   end
 end
 
