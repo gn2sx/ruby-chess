@@ -78,11 +78,6 @@ class Pawn < Piece
     target_row=target[0]
     target_column=target[1]
     target_contents=board[target_row][target_column]
-    if @player==1
-      player_mod=-1
-    elsif @player==2
-      player_mod=1
-    end #Allows for easy conversion of if "forward" is defined as up or down by player
     if target_contents==target_contents.colorize(:white).on_black
       target_player=1
     elsif target_contents==target_contents.colorize(:black).on_white
@@ -90,17 +85,19 @@ class Pawn < Piece
     else
       target_player=nil
     end
+    row_diff=current_row-target_row if @player==1
+    row_diff=target_row-current_row if @player==2
+    #Difference between current and target rows
     if current==target
       puts "Illegal move: The #{@type} is already on that space."
       return false
     elsif !target_row.between?(0,7)||!target_column.between?(0,7)
       puts "Illegal move: The given square does not exist."
       return false
-    elsif !first_move?&&target_row!=current_row+player_mod&&target_column!=current_column
+    elsif !first_move?&&row_diff!=1
       puts "Illegal move: The pawn may only move strieght forward, and only move two spaces on it's first turn."
       return false
-    elsif first_move?&&!target_row.between?(current_row+player_mod,current_row+(player_mod*2))&&target_column!=current_column
-      puts current_row
+    elsif first_move?&&row_diff>2
       puts "Illegal move: The pawn may only move strieght forward."
       return false
     elsif target_contents!=empty&&target_player==@player
