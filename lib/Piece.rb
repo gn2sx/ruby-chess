@@ -144,6 +144,7 @@ class King < Piece
       return false
     elsif !target_row.between?(current_row-1,current_row+1)||!target_column.between?(current_column-1,current_column+1)
       puts "Illegal move: The King must move one space, in any direction."
+      return false
     elsif target_contents!=empty&&target_player==@player
       puts "Illegal move: Space is occupied by your #{target_contents}"
       return false

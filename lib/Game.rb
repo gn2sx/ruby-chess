@@ -13,6 +13,11 @@ class Game
     @board[-1]=[@rook1_p1.id,@knight1_p1.id,@bishop1_p1.id,@king_p1.id,@queen_p1.id,@bishop1_p1.id,@knight2_p1.id,@rook2_p1.id]
     @board[-2]=[@pawn1_p1.id,@pawn2_p1.id,@pawn3_p1.id,@pawn4_p1.id,@pawn5_p1.id,@pawn6_p1.id,@pawn7_p1.id,@pawn8_p1.id]
     @destroyed=[]
+    @winner=false
+  end
+
+  def winner?
+    return @winner
   end
 
   def spawn_pieces
@@ -35,7 +40,7 @@ class Game
     @pawn7_p1=Pawn.new('P7', 1)
     @pawn8_p1=Pawn.new('P8', 1)
     #hash refrences
-    @p1_pieces['K1']=@king_p1
+    @p1_pieces['KI']=@king_p1
     @p1_pieces['Q1']=@queen_p1
     @p1_pieces['B1']=@bishop1_p1
     @p1_pieces['B2']=@bishop2_p1
@@ -70,7 +75,7 @@ class Game
     @pawn7_p2=Pawn.new('P7', 2)
     @pawn8_p2=Pawn.new('P8', 2)
     #hash refrences
-    @p2_pieces['K1']=@king_p2
+    @p2_pieces['KI']=@king_p2
     @p2_pieces['Q1']=@queen_p2
     @p2_pieces['B1']=@bishop2_p2
     @p2_pieces['B2']=@bishop2_p2
@@ -114,6 +119,10 @@ class Game
     end
     @destroyed.push(@board[current[0]][current[1]])
     @board[current[0]][current[1]]=@empty
+    if piece.id.uncolorize=='KI'
+      @winner=1 if player==2
+      @winner=2 if player==1
+    end
   end
 
   def draw_board
@@ -123,8 +132,8 @@ class Game
       row-=1
     end
     puts "  A  B  C  D  E  F  G  H "
-    puts "Destroyed pieces: "
-    @destroyed.each{|i| print i}
+    puts "Destroyed pieces:"
+    @destroyed.each{|i| print "#{i},"}
   end
 
   def move(player, given_id, target)
