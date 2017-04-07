@@ -94,6 +94,9 @@ class Pawn < Piece
     elsif !target_row.between?(0,7)||!target_column.between?(0,7)
       puts "Illegal move: The given square does not exist."
       return false
+    elsif target_contents==empty&&target_column!=current_column
+      puts "Illegal move: Pawns may only move diagonally when capturing pieces."
+      return false
     elsif !first_move?&&row_diff!=1
       puts "Illegal move: The pawn may only move strieght forward, and only move two spaces on it's first turn."
       return false
